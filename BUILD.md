@@ -27,7 +27,7 @@ Put the Kokoro model files `kokoro-v1.0.onnx` and `voices-v1.0.bin` in `~/.local
 ~/.venvs/localavatar/bin/python -m pytest -q
 ```
 
-87 tests. They cover script splitting (word preservation, limits, merges, paragraphs), duration math, real ffmpeg renders whose output must end with the audio (pad, trim and equal cases, three aspects, captions burned), CLI parsing and flag plumbing into the SadTalker command. Special-path renders use generated black video and a sine tone, then decode the output and require visible caption pixels and non-silent audio. The web UI tests start the real HTTP server on a random loopback port with a fake render runner: multipart upload, validation, queue order and cancel, restart recovery, range downloads, Host and Origin refusal, voice samples, GPU health. The CUDA preflight tests fake the probe, and the GPU-busy gate tests start a throwaway subprocess. The tests do not run SadTalker, Kokoro, network models or services.
+92 tests. They cover script splitting (word preservation, limits, merges, paragraphs), duration math, real ffmpeg renders whose output must end with the audio (pad, trim and equal cases, three aspects, captions burned), CLI parsing and flag plumbing into the SadTalker command, and the SadTalker source pinning (a checkout on the default branch is moved to the pinned commit). Special-path renders use generated black video and a sine tone, then decode the output and require visible caption pixels and non-silent audio. The web UI tests start the real HTTP server on a random loopback port with a fake render runner: multipart upload, validation, queue order and cancel, restart recovery, range downloads, Host and Origin refusal, voice samples, GPU health. The CUDA preflight tests fake the probe, and the GPU-busy gate tests start a throwaway subprocess. The tests do not run SadTalker, Kokoro, network models or services.
 
 ## 3. Run
 
@@ -88,7 +88,7 @@ Two early runs hit CUDA out-of-memory with SadTalker's stock `inference.py` (all
 
 ```text
 localavatar/   script, tts, animate, engine_run, render, timing, captions, gpu, models, webui
-tests/         87 tests
+tests/         92 tests
 scripts/       install.sh, setup_models.py, mouth_motion.py
 fixtures/      public-domain portrait and proof script
 docs/architecture.svg
