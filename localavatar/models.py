@@ -75,15 +75,45 @@ def _download(w: Weight) -> str:
     return f"fetched {w.rel} ({size / 1e6:.0f} MB)"
 
 
+def _git(dest: Path, *args: str) -> subprocess.CompletedProcess:
+    return subprocess.run(["git", "-C", str(dest), *args], capture_output=True, text=True)
+
+
+def sync_source(dest: Path = VENDOR, repo: str = SADTALKER_REPO, commit: str = SADTALKER_COMMIT,
+                log=print) -> str:
+    """Leave the SadTalker source at ``dest`` checked out at ``commit`` and return it.
+
+    The clone is shallow: only the pinned commit's tree is fetched. An existing checkout
+    (including one made by an older release that cloned the default branch) is moved to
+    the pinned commit instead of being cloned again.
+    """
+    if not (dest / ".git").exists():
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(["git", "init", "-q", str(dest)], check=True)
+    url = _git(dest, "remote", "get-url", "origin")
+    if url.returncode != 0:
+        subprocess.run(["git", "-C", str(dest), "remote", "add", "origin", repo], check=True)
+    elif url.stdout.strip() != repo:
+        subprocess.run(["git", "-C", str(dest), "remote", "set-url", "origin", repo], check=True)
+    head = _git(dest, "rev-parse", "HEAD")
+    if head.returncode == 0 and head.stdout.strip() == commit:
+        log(f"sadtalker source {dest} @ {commit[:12]}")
+        return commit
+    r = _git(dest, "fetch", "--depth", "1", "origin", commit)
+    if r.returncode != 0:
+        raise RuntimeError(f"cannot fetch SadTalker {commit[:12]}: {r.stderr.strip()[-400:]}")
+    r = _git(dest, "checkout", "-q", "--detach", "FETCH_HEAD")
+    if r.returncode != 0:
+        raise RuntimeError(f"cannot check out SadTalker {commit[:12]}: {r.stderr.strip()[-400:]}")
+    log(f"sadtalker source {dest} @ {commit[:12]}")
+    return commit
+
+
 def fetch(log=print) -> None:
     old = os.umask(0o077)
     try:
         DATA.mkdir(parents=True, exist_ok=True)
-        if not (VENDOR / "inference.py").is_file():
-            VENDOR.parent.mkdir(parents=True, exist_ok=True)
-            subprocess.run(["git", "clone", "--depth", "1", SADTALKER_REPO, str(VENDOR)], check=True)
-        head = subprocess.run(["git", "-C", str(VENDOR), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
-        log(f"sadtalker source {VENDOR} @ {head[:12]}" + ("" if head == SADTALKER_COMMIT else f" (evaluated {SADTALKER_COMMIT[:12]})"))
+        sync_source(VENDOR, SADTALKER_REPO, SADTALKER_COMMIT, log)
         from concurrent.futures import ThreadPoolExecutor
 
         with ThreadPoolExecutor(4) as ex:
