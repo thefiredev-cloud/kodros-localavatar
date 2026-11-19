@@ -1,0 +1,5 @@
+Hi there. This short video was made on one desktop computer, with no cloud service and no monthly bill.
+
+A single still photo goes in, along with a few lines of text. A local voice reads the script, and an open model moves the lips, eyes and face to match each word.
+
+Nothing leaves the machine. The whole thing runs on one graphics card, start to finish.

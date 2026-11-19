@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LocalAvatar</title>
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<header>
+  <h1>LocalAvatar</h1>
+  <p>Talking-head video from one photo and a script. Runs on this computer. Nothing is uploaded.</p>
+  <p id="gpu-warn" class="error" hidden></p>
+</header>
+
+<main>
+  <form id="make" autocomplete="off">
+    <section>
+      <h2>1. Photo</h2>
+      <label class="drop" for="photo">
+        <img id="thumb" alt="" hidden>
+        <span id="drop-text">Choose a clear, front-facing portrait (PNG, JPEG, WEBP)</span>
+      </label>
+      <input id="photo" name="photo" type="file" accept="image/png,image/jpeg,image/webp,image/bmp" required>
+    </section>
+
+    <section>
+      <h2>2. Script</h2>
+      <textarea id="script" name="script" rows="7" maxlength="6000" required
+        placeholder="Type what the presenter should say. A blank line adds a longer pause."></textarea>
+      <p class="hint" id="script-info">0 words</p>
+    </section>
+
+    <section>
+      <h2>3. Voice</h2>
+      <div class="row">
+        <select id="voice" name="voice" aria-label="Voice"></select>
+        <button type="button" id="preview" class="ghost">Play sample</button>
+      </div>
+      <label class="slider">Speed <output id="speed-out">1.0x</output>
+        <input id="speed" name="speed" type="range" min="0.7" max="1.3" step="0.05" value="1.0">
+      </label>
+    </section>
+
+    <section>
+      <h2>4. Frame</h2>
+      <div class="row choices" role="radiogroup" aria-label="Aspect ratio">
+        <label><input type="radio" name="aspect" value="9:16" checked> 9:16 vertical</label>
+        <label><input type="radio" name="aspect" value="16:9"> 16:9 wide</label>
+        <label><input type="radio" name="aspect" value="1:1"> 1:1 square</label>
+        <label><input type="radio" name="aspect" value="source"> Photo framing</label>
+      </div>
+      <label class="check"><input type="checkbox" name="captions" value="1" checked> Burn in captions</label>
+      <label class="check"><input type="checkbox" name="motion" value="1"> Move the head (less stable on wide photos)</label>
+    </section>
+
+    <section>
+      <h2>5. Quality</h2>
+      <div class="row choices" role="radiogroup" aria-label="Quality">
+        <label><input type="radio" name="quality" value="fast" checked> Fast (no face restore)</label>
+        <label><input type="radio" name="quality" value="best"> Best (face restore, much slower)</label>
+      </div>
+      <label class="check"><input type="checkbox" name="cpu" value="1" id="cpu"> Run on the CPU (very slow; use when the GPU is full)</label>
+      <p class="hint">Measured on this PC for a 23 s script: fast about 7 min, best about 27 min.</p>
+    </section>
+
+    <button type="submit" id="go">Make video</button>
+    <p id="form-error" class="error" role="alert" hidden></p>
+  </form>
+
+  <aside>
+    <section id="result" hidden>
+      <h2>Result</h2>
+      <p id="status" role="status"></p>
+      <div id="stage" class="stage"><video id="video" controls playsinline hidden></video></div>
+      <p id="actions" hidden>
+        <a id="download" class="button" href="#">Download MP4</a>
+        <button type="button" id="cancel" class="ghost" hidden>Cancel</button>
+      </p>
+      <pre id="log" hidden></pre>
+    </section>
+
+    <section>
+      <h2>Recent videos</h2>
+      <ul id="jobs" class="jobs"></ul>
+      <p class="hint" id="jobs-empty">None yet.</p>
+    </section>
+  </aside>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+[project]
+name = "localavatar"
+version = "0.1.0"
+description = "Local talking-head videos from one photo and a script (SadTalker + Kokoro)"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=2.0.2",
+    "kokoro-onnx==0.4.9",
+    "onnxruntime>=1.20.1",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.scripts]
+localavatar = "localavatar.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["localavatar"]
+
+[tool.setuptools.package-data]
+localavatar = ["web/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
