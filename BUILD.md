@@ -15,6 +15,8 @@ scripts/install.sh
 
 This creates `~/.venvs/localavatar` (CLI, Kokoro, tests) and `~/.venvs/localavatar-engine` (SadTalker), installs `engine-requirements.txt`, runs `localavatar setup` and links `~/.local/bin/localavatar`. Override the engine interpreter with `LOCALAVATAR_ENGINE_PYTHON`. Data lives in `~/.local/share/localavatar` (mode 0700, override with `LOCALAVATAR_HOME`).
 
+Optional GPU-busy gate: set `LOCALAVATAR_GPU_BLOCK` to a comma-separated list of process-name fragments (for example `blender,comfyui`). While one of them runs, `make` refuses GPU work with "a GPU-reserved process is running" and tells you to stop it or pass `--cpu`. It is empty by default, so nothing is blocked and `/proc` is not scanned.
+
 `localavatar setup` clones SadTalker at the pinned commit `cd4c0465ae0b54a6f85af57f5c65fec9fe23e7f8` (2023-10-11) and downloads the SadTalker v0.0.2-rc weights, GFPGAN v1.4 and the facexlib detectors from GitHub. It is the only step that uses the network.
 
 Put the Kokoro model files `kokoro-v1.0.onnx` and `voices-v1.0.bin` in `~/.local/share/kokoro`, or point `KOKORO_DIR` at the folder that holds them.
@@ -25,7 +27,7 @@ Put the Kokoro model files `kokoro-v1.0.onnx` and `voices-v1.0.bin` in `~/.local
 ~/.venvs/localavatar/bin/python -m pytest -q
 ```
 
-83 tests. They cover script splitting (word preservation, limits, merges, paragraphs), duration math, real ffmpeg renders whose output must end with the audio (pad, trim and equal cases, three aspects, captions burned), CLI parsing and flag plumbing into the SadTalker command. Special-path renders use generated black video and a sine tone, then decode the output and require visible caption pixels and non-silent audio. The web UI tests start the real HTTP server on a random loopback port with a fake render runner: multipart upload, validation, queue order and cancel, restart recovery, range downloads, Host and Origin refusal, voice samples, GPU health. The CUDA preflight tests fake the probe. The tests do not run SadTalker, Kokoro, network models or services.
+87 tests. They cover script splitting (word preservation, limits, merges, paragraphs), duration math, real ffmpeg renders whose output must end with the audio (pad, trim and equal cases, three aspects, captions burned), CLI parsing and flag plumbing into the SadTalker command. Special-path renders use generated black video and a sine tone, then decode the output and require visible caption pixels and non-silent audio. The web UI tests start the real HTTP server on a random loopback port with a fake render runner: multipart upload, validation, queue order and cancel, restart recovery, range downloads, Host and Origin refusal, voice samples, GPU health. The CUDA preflight tests fake the probe, and the GPU-busy gate tests start a throwaway subprocess. The tests do not run SadTalker, Kokoro, network models or services.
 
 ## 3. Run
 
@@ -47,7 +49,7 @@ The web UI takes a photo, a script, a voice (English Kokoro voices with a sample
 4. Fit and render (`render.py`, `timing.py`): pad or trim so the video ends with the audio, optional 9:16, 1:1 or 16:9 layout (sharp portrait over a blurred copy), optional burned captions, loudnorm to -16 LUFS, NVENC with a libx264 fallback.
 5. Captions (`captions.py`): up to three words on screen. Chunk times are exact from the voice step. Word times inside a chunk are spread by length.
 
-Output is `out.mp4` plus `out.json` (chunks, timings, durations, engine, license, runtime, GPU peak). If GeForce NOW is running, `make` refuses GPU work.
+Output is `out.mp4` plus `out.json` (chunks, timings, durations, engine, license, runtime, GPU peak). If a process listed in `LOCALAVATAR_GPU_BLOCK` is running, `make` refuses GPU work.
 
 ## Model choice
 
@@ -86,7 +88,7 @@ Two early runs hit CUDA out-of-memory with SadTalker's stock `inference.py` (all
 
 ```text
 localavatar/   script, tts, animate, engine_run, render, timing, captions, gpu, models, webui
-tests/         83 tests
+tests/         87 tests
 scripts/       install.sh, setup_models.py, mouth_motion.py
 fixtures/      public-domain portrait and proof script
 docs/architecture.svg

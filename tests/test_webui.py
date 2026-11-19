@@ -385,11 +385,11 @@ def test_health_reports_gpu_state(server, monkeypatch):
     from localavatar import gpu
 
     monkeypatch.setattr(gpu, "cuda_context_error", lambda: "the GPU refused to create a CUDA context")
-    monkeypatch.setattr(gpu, "geforce_now_running", lambda: False)
+    monkeypatch.setattr(gpu, "gpu_reserved_running", lambda: False)
     monkeypatch.setattr(gpu, "free_mib", lambda: 6000)
     s, _, b = call(server, "GET", "/api/health")
     h = json.loads(b)
-    assert s == 200 and h["cuda_error"].startswith("the GPU refused") and h["geforce_now"] is False
+    assert s == 200 and h["cuda_error"].startswith("the GPU refused") and h["gpu_reserved"] is False
     assert h["gpu_free_mib"] == 6000 and isinstance(h["missing"], list)
 
 

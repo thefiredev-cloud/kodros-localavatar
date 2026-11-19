@@ -520,7 +520,7 @@ def make_handler(app: App, port_getter):
                 from . import gpu
                 from .models import missing
 
-                return self._json(200, {"missing": missing(), "geforce_now": gpu.geforce_now_running(),
+                return self._json(200, {"missing": missing(), "gpu_reserved": gpu.gpu_reserved_running(),
                                         "gpu_free_mib": gpu.free_mib(), "cuda_error": gpu.cuda_context_error()})
             if path == "/api/jobs":
                 return self._json(200, {"jobs": app.jobs.recent()})

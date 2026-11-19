@@ -58,9 +58,9 @@ def _make(req: MakeRequest, log) -> dict:
     work.mkdir(parents=True, exist_ok=True)
     req.out.parent.mkdir(parents=True, exist_ok=True)
 
-    gfn = gpu.geforce_now_running()
-    if gfn and not req.animate.cpu:
-        raise RuntimeError("GeForce NOW is running: refusing GPU work. Close it or pass --cpu (very slow).")
+    reserved = gpu.gpu_reserved_running()
+    if reserved and not req.animate.cpu:
+        raise RuntimeError("a GPU-reserved process is running: refusing GPU work. Stop it or pass --cpu (very slow).")
     if not req.animate.cpu:
         cuda_err = gpu.cuda_context_error()
         if cuda_err:
@@ -116,7 +116,7 @@ def _make(req: MakeRequest, log) -> dict:
         ass_path.write_text(captions.build_ass(events, out_w, out_h))
 
     t = time.monotonic()
-    encoders = ("libx264",) if gfn else ("h264_nvenc", "libx264")
+    encoders = ("libx264",) if reserved else ("h264_nvenc", "libx264")
     enc = render.render(str(raw), str(wav), str(req.out), req.aspect,
                         raw_info["video"]["width"], raw_info["video"]["height"], plan,
                         str(ass_path) if ass_path else None, encoders)

@@ -1,4 +1,4 @@
-"""GPU memory sampling via nvidia-smi, plus the GeForce NOW gate.
+"""GPU memory sampling via nvidia-smi, plus the optional GPU-busy gate.
 
 Adapted from the gpu module of kodros-localclip.
 """
@@ -11,7 +11,20 @@ import threading
 import time
 
 
-def geforce_now_running() -> bool:
+def reserved_names() -> list[str]:
+    """Process-name fragments from LOCALAVATAR_GPU_BLOCK (comma separated, case-insensitive). Empty by default."""
+    raw = os.environ.get("LOCALAVATAR_GPU_BLOCK", "")
+    return [n.strip().lower() for n in raw.split(",") if n.strip()]
+
+
+def gpu_reserved_running() -> bool:
+    """True when a process whose command line contains a listed fragment is running.
+
+    With LOCALAVATAR_GPU_BLOCK unset or empty this is always False and /proc is not scanned.
+    """
+    names = reserved_names()
+    if not names:
+        return False
     for pid in os.listdir("/proc"):
         if not pid.isdigit() or int(pid) == os.getpid():
             continue
@@ -20,7 +33,7 @@ def geforce_now_running() -> bool:
                 cmd = f.read().decode(errors="ignore").lower()
         except OSError:
             continue
-        if "geforcenow" in cmd:
+        if any(n in cmd for n in names):
             return True
     return False
 

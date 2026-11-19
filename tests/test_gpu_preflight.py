@@ -58,7 +58,7 @@ def make_req(tmp_path, cpu):
 
 
 def test_pipeline_refuses_gpu_run_before_any_work(tmp_path, monkeypatch):
-    monkeypatch.setattr(gpu, "geforce_now_running", lambda: False)
+    monkeypatch.setattr(gpu, "gpu_reserved_running", lambda: False)
     monkeypatch.setattr(gpu, "cuda_context_error", lambda: "the GPU refused to create a CUDA context")
     monkeypatch.setattr(pipeline.tts, "synthesize", lambda *a, **k: pytest.fail("TTS ran before the GPU check"))
     with pytest.raises(RuntimeError, match="refused to create a CUDA context"):
@@ -69,7 +69,7 @@ def test_pipeline_skips_the_probe_for_cpu_runs(tmp_path, monkeypatch):
     class Reached(Exception):
         pass
 
-    monkeypatch.setattr(gpu, "geforce_now_running", lambda: False)
+    monkeypatch.setattr(gpu, "gpu_reserved_running", lambda: False)
     monkeypatch.setattr(gpu, "cuda_context_error", lambda: pytest.fail("probe must not run for --cpu"))
     monkeypatch.setattr(pipeline.tts, "load_cached", lambda *a, **k: (_ for _ in ()).throw(Reached()))
     with pytest.raises(Reached):

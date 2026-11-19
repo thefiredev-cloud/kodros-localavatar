@@ -33,7 +33,7 @@ Python 3.12 (CLI, Kokoro ONNX, tests), Python 3.10 with torch 2.1 (SadTalker eng
 git clone https://github.com/thefiredev-cloud/kodros-localavatar.git
 cd kodros-localavatar
 scripts/install.sh                     # two venvs, then downloads pinned weights
-~/.venvs/localavatar/bin/python -m pytest -q    # 83 tests, no models needed
+~/.venvs/localavatar/bin/python -m pytest -q    # 87 tests, no models needed
 localavatar make --photo FACE.jpg --script script.txt --voice af_heart --out out.mp4 --captions
 localavatar serve                      # http://127.0.0.1:8870/
 ```

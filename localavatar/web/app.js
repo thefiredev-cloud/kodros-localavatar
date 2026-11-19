@@ -208,7 +208,7 @@ async function loadHealth() {
     const h = await api("/api/health");
     const msgs = [];
     if (h.missing.length) msgs.push("SadTalker is not set up: run `localavatar setup`.");
-    if (h.geforce_now) msgs.push("GeForce NOW is running, so GPU renders are refused.");
+    if (h.gpu_reserved) msgs.push("A GPU-reserved process is running, so GPU renders are refused.");
     if (h.cuda_error) {
       msgs.push("GPU unavailable: " + h.cuda_error);
       $("cpu").checked = true;

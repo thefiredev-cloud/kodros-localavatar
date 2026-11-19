@@ -5,7 +5,7 @@
     localavatar make --photo FACE.jpg --audio my-recording.m4a --out out.mp4   # your own voice
     localavatar setup     # clone pinned SadTalker + download weights (~2.5 GB)
     localavatar voices    # list Kokoro voices
-    localavatar doctor    # check weights, voices, GPU, GeForce NOW gate
+    localavatar doctor    # check weights, voices, GPU, GPU-busy gate
 """
 
 from __future__ import annotations
@@ -131,8 +131,8 @@ def cmd_doctor() -> int:
         print(f"kokoro: {'ok' if f.is_file() else 'missing'} {f}")
         ok &= f.is_file()
     print("gpu free MiB:", gpu.free_mib())
-    gfn = gpu.geforce_now_running()
-    print("geforce now running:", gfn)
+    reserved = gpu.gpu_reserved_running()
+    print("gpu-reserved process running:", reserved)
     return 0 if ok else 1
 
 
