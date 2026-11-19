@@ -5,7 +5,7 @@
     localavatar make --photo FACE.jpg --audio my-recording.m4a --out out.mp4   # your own voice
     localavatar setup     # clone pinned SadTalker + download weights (~2.5 GB)
     localavatar voices    # list Kokoro voices
-    localavatar doctor    # check weights, voices, GPU, GPU-busy gate
+    localavatar doctor    # check weights, Kokoro files, free VRAM, GPU-busy gate
 """
 
 from __future__ import annotations

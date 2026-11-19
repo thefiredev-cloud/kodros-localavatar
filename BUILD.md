@@ -35,7 +35,8 @@ Put the Kokoro model files `kokoro-v1.0.onnx` and `voices-v1.0.bin` in `~/.local
 localavatar make --photo FACE.jpg --script script.txt --voice af_heart --out out.mp4 \
                  [--aspect source|9:16|1:1|16:9] [--captions] [--size 256|512] [--motion]
 localavatar make --photo FACE.jpg --audio my-recording.m4a --out out.mp4   # your own voice, no captions
-localavatar doctor    # weights, voices, free VRAM, GPU health
+localavatar make --photo FACE.jpg --text "Short inline script" --out out.mp4   # script given on the command line
+localavatar doctor    # weights, Kokoro files, free VRAM, GPU-busy gate
 localavatar serve [--port 8870]
 ```
 

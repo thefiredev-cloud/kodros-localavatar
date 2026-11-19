@@ -38,7 +38,7 @@ localavatar make --photo FACE.jpg --script script.txt --voice af_heart --out out
 localavatar serve                      # http://127.0.0.1:8870/
 ```
 
-Put the Kokoro files `kokoro-v1.0.onnx` and `voices-v1.0.bin` in `~/.local/share/kokoro` (or set `KOKORO_DIR`). `localavatar doctor` reports missing weights, free VRAM and GPU health. [BUILD.md](BUILD.md) has the full steps, results and the model comparison.
+Put the Kokoro files `kokoro-v1.0.onnx` and `voices-v1.0.bin` in `~/.local/share/kokoro` (or set `KOKORO_DIR`). `localavatar doctor` reports missing SadTalker weights, whether the two Kokoro files exist, free VRAM and whether a `LOCALAVATAR_GPU_BLOCK` process is running. It does not create a CUDA context; `make` does that check before any GPU work. [BUILD.md](BUILD.md) has the full steps, results and the model comparison.
 
 ## Limits
 
